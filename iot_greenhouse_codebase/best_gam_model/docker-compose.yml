@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: MyInfluxPassword123
+      DOCKER_INFLUXDB_INIT_ORG: greenhouse
+      DOCKER_INFLUXDB_INIT_BUCKET: gc_data
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: supersecret
+    volumes:
+      - influx-data:/var/lib/influxdb2
+
+  grafana:
+    image: grafana/grafana:10.2
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+    depends_on:
+      - influxdb
+
+  model:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_TOKEN: supersecret
+      INFLUX_ORG: greenhouse
+      INFLUX_BUCKET: gc_data
+    depends_on:
+      - influxdb
+
+volumes:
+  influx-data:

@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+numpy
+joblib
+pygam
+influxdb-client
+pydantic
+azure-eventhub
+azure-iot-device
